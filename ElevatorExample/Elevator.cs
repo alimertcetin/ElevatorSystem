@@ -1,55 +1,62 @@
 ﻿using AutamationSystem.BuildingSytem;
+using AutamationSystem.HumanLogic;
+using System;
+using System.Collections.Generic;
 using System.Timers;
+using Direction = AutamationSystem.FloorElevatorIntegration.ElevatorButton.Direction;
 
 namespace AutamationSystem.ElevatorSystem
 {
     public class Elevator
     {
-        public Building Building;
-        public bool IsMoving { get; private set; }
+        public Building Building { get; private set; }
+        public int ElevatorIndex { get; private set; }
         public Floor CurrentFloor { get; private set; }
-        public Floor TargetFloor { get; private set; }
-        public ElevatorDoor Door { get; private set; }
-        public double MoveSpeed = 1;
-        public Timer moveTimer; //how much time it will take to move
 
-        public Elevator(Building building, Floor currentFloor, double moveSpeed = 1)
+        private Queue<Floor> TargetFloors { get; set; }
+        private ElevatorDoor Door { get; set; }
+        private List<Person> personsCarrying = new List<Person>();
+
+        public Elevator(Building building, int elevatorIndex, Floor currentFloor, double moveSpeed = 1)
         {
             this.Building = building;
+            this.ElevatorIndex = elevatorIndex;
             this.CurrentFloor = currentFloor;
-            this.MoveSpeed = moveSpeed;
-            this.IsMoving = false;
+            this.TargetFloors = new Queue<Floor>();
             this.Door = new ElevatorDoor(this, 1);
-            this.moveTimer = new Timer(MoveSpeed);
         }
 
-        public void Move(Floor floor)
+        public void Move()
         {
-            TargetFloor = floor;
-            if (TargetFloor.FloorIndex == CurrentFloor.FloorIndex)
+            for (int i = personsCarrying.Count - 1; i >= 0; i--)
             {
-                //Gets called from same floor
-                //Wait for caller
-                return;
+                var person = personsCarrying[i];
+                if(person.TargetFloorIndex == CurrentFloor.FloorIndex)
+                {
+                    personsCarrying.RemoveAt(i);
+                }
             }
 
-            if (TargetFloor.FloorIndex < CurrentFloor.FloorIndex)
+            CurrentFloor.ElevatorMovedAway(this);
+            CurrentFloor = TargetFloors.Dequeue();
+            CurrentFloor.ElevatorArrived(this);
+            Door.Open();
+
+            if (TargetFloors.Count == 0 && Door.IsOpen)
             {
-                //Going down
+                Door.Close();
             }
-            else
-            {
-                //Going up
-            }
-            moveTimer.Elapsed += MovedOneUnit;
-            moveTimer.Start();
         }
 
-        private void MovedOneUnit(object sender, ElapsedEventArgs e)
+        public void TakeTheElevator(Person person)
         {
-            //Check if elevator arrived to target floor
-            //if arrived open the door
-            //else keep moving
+            personsCarrying.Add(person);
+        }
+
+        public override string ToString()
+        {
+            return $"Elevator Index : {ElevatorIndex}{Environment.NewLine}" +
+                $"Current Floor : {CurrentFloor.FloorIndex}";
         }
     }
 }

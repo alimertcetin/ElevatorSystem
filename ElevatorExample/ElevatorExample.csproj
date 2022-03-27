@@ -45,6 +45,7 @@
   <ItemGroup>
     <Compile Include="Building.cs" />
     <Compile Include="Elevator.cs" />
+    <Compile Include="ElevatorButton.cs" />
     <Compile Include="ElevatorDoor.cs" />
     <Compile Include="Floor.cs" />
     <Compile Include="Person.cs" />
