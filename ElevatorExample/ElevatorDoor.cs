@@ -7,12 +7,10 @@ namespace AutamationSystem.ElevatorSystem
         public Elevator Elevator { get; private set; } //where this door belongs
 
         public bool IsOpen { get; private set; }
-        public double MoveSpeed { get; private set; }
 
-        public ElevatorDoor(Elevator elevator, double moveSpeed)
+        public ElevatorDoor(Elevator elevator)
         {
             this.Elevator = elevator;
-            this.MoveSpeed = moveSpeed;
         }
 
         public void Open()

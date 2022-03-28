@@ -3,14 +3,14 @@ using System;
 
 namespace AutamationSystem.FloorElevatorIntegration
 {
-    public class ElevatorButton
+    public class ElevatorFloorButton
     {
         public enum Direction { None, Up, Down };
 
         public Floor Floor { get; private set; }
         public Direction PressedDirection { get; private set; }
 
-        public ElevatorButton(Floor floor)
+        public ElevatorFloorButton(Floor floor)
         {
             this.Floor = floor;
             PressedDirection = Direction.None;
