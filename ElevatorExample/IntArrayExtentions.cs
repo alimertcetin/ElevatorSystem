@@ -50,6 +50,65 @@ public static class IntArrayExtentions
 
         return current;
     }
+
+    public static int[] RemoveAt(int[] arr, int index)
+    {
+        int[] newArr = new int[arr.Length - 1];
+        bool indexPassed = false;
+        for (int i = 0; i < arr.Length; i++)
+        {
+            if (i == index)
+            {
+                indexPassed = true;
+                continue;
+            }
+            if (indexPassed)
+            {
+                newArr[i - 1] = arr[i];
+            }
+            else
+            {
+                newArr[i] = arr[i];
+            }
+        }
+        return newArr;
+    }
+    //TODO : Get rid of primitives
+    public static int[] Remove(int[] arr, int value)
+    {
+        int[] newArr = new int[arr.Length - 1];
+        bool valueFound = false;
+        for (int i = 0; i < arr.Length; i++)
+        {
+            if(arr[i] == value) //array can contain same value
+            {
+                valueFound = true;
+                continue;
+            }
+
+            if (valueFound)
+            {
+                newArr[i - 1] = arr[i];
+            }
+            else
+            {
+                newArr[i] = arr[i];
+            }
+        }
+        return newArr;
+    }
+
+    public static bool Contains(this int[] arr, int value)
+    {
+        for (int i = 0; i < arr.Length; i++)
+        {
+            if(arr[i] == value)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 }
 
 public static class ElevatorExtentions

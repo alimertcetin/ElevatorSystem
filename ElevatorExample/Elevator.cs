@@ -73,6 +73,8 @@ namespace AutamationSystem.ElevatorSystem
 
         public void EnterFloorNumbers(params int[] floorNumbers)
         {
+            if (floorNumbers.Length == 0) return;
+
             floorNumbers.Sort();
 
             Direction dir = Direction.None;
@@ -127,12 +129,13 @@ namespace AutamationSystem.ElevatorSystem
         {
             if(Door.IsOpen) Door.Close();
 
-            if (TargetFloors.Count == 0) return true;
+            if (TargetFloors.Count == 0) return false;
 
             ElevatorMoveData currentMoveData = TargetFloors.Peek();
             if (CurrentFloor.FloorIndex == currentMoveData.Floor.FloorIndex)
             {
                 TargetFloors.Dequeue();
+                Door.Open();
                 return true;
             }
 
@@ -145,13 +148,15 @@ namespace AutamationSystem.ElevatorSystem
             {
                 //We arrived to floor
                 TargetFloors.Dequeue();
-                Console.WriteLine($"{ElevatorIndex} Elevator has arrived to : " + CurrentFloor.ToString());
+                Console.WriteLine($"{ElevatorIndex}. Elevator has arrived to : " + CurrentFloor.ToString());
+                Console.WriteLine();
                 Door.Open();
                 return true;
             }
             else
             {
-                Console.WriteLine($"{ElevatorIndex} Elevator is not arrived to {currentMoveData.Floor.FloorIndex} yet, current floor is {CurrentFloor.FloorIndex}");
+                Console.WriteLine($"{ElevatorIndex}. Elevator is not arrived to {currentMoveData.Floor.FloorIndex} yet, current floor : {CurrentFloor.FloorIndex}");
+                Console.WriteLine();
                 return false;
             }
         }

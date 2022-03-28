@@ -19,25 +19,45 @@ namespace AutamationSystem
 
         static void Main(string[] args)
         {
-            Elevator elevator = new Elevator(building, -1, building.Floors[0]);
             Console.WriteLine(building);
             Console.WriteLine("Enter current floor");
             if (!int.TryParse(Console.ReadLine(), out var number)) Console.WriteLine("You must Enter floor");
 
             //call elevator to floor
-            elevator.Call(building.Floors[number]);
+            building.Floors[number].CallElevator();
 
             while (true)
             {
-                while (!elevator.Move() || elevator.TargetFloors.Count > 0)
+                System.Threading.Thread.Sleep(500);
+                building.ElevatorUpdate(out List<Elevator> arrivedElevators);
+
+                foreach (Elevator elevator in arrivedElevators)
                 {
-                    System.Threading.Thread.Sleep(500);
+                    Console.WriteLine("Enter Target floors to " + elevator.ElevatorIndex + ". Elevator");
+                    Console.WriteLine("Input Example : 1,8,6,15 ----- If you wanna skip just type " + elevator.CurrentFloor.FloorIndex);
+                    string[] floorNumbersStr = Console.ReadLine().Split(','); //Read input
+                    int[] floorNumberArr = GetLegitFloorsFromInput(floorNumbersStr);
+
+                    if (floorNumberArr.Contains(elevator.CurrentFloor.FloorIndex))
+                    {
+                        floorNumberArr = IntArrayExtentions.Remove(floorNumberArr, elevator.CurrentFloor.FloorIndex);
+                    }
+
+                    elevator.EnterFloorNumbers(floorNumberArr);
                 }
 
-                Console.WriteLine("Enter Target floors by seperating them with comma Example : \" 1,8,6,15 \"");
-                string[] floorNumbersStr = Console.ReadLine().Split(','); //Read input
-                int[] floorNumberArr = GetLegitFloorsFromInput(floorNumbersStr);
-                elevator.EnterFloorNumbers(floorNumberArr);
+                if(arrivedElevators.Count == 0 && !building.IsSomeoneWaitingForElevator())
+                {
+                    Console.WriteLine(building);
+                    Console.WriteLine("Waiting for elevator call");
+                    if (!int.TryParse(Console.ReadLine(), out int floorNumber))
+                    {
+                        Console.WriteLine("You must Enter floor");
+                    }
+
+                    //call elevator to floor
+                    building.Floors[floorNumber].CallElevator();
+                }
             }
         }
 

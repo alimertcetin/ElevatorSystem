@@ -53,6 +53,34 @@ namespace AutamationSystem.BuildingSytem
 
         }
 
+
+        public void ElevatorUpdate(out List<Elevator> arrivedElevators)
+        {
+            arrivedElevators = new List<Elevator>();
+            foreach (Elevator elevator in Elevators)
+            {
+                if (elevator.Move())
+                {
+                    arrivedElevators.Add(elevator);
+                }
+            }
+        }
+
+        public bool IsSomeoneWaitingForElevator()
+        {
+            bool flag = false;
+            foreach (Elevator elevator in Elevators)
+            {
+                if(elevator.TargetFloors.Count > 0)
+                {
+                    flag = true;
+                    break;
+                }
+            }
+            return flag;
+        }
+
+
         public override string ToString()
         {
             return $"Floor count : {Floors.Length}{Environment.NewLine}" +
