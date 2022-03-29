@@ -9,7 +9,7 @@ namespace AutamationSystem
     {
         private static Building building = new Building("Turp Tower", 20, 6, 0);
         private static Input input = new Input();
-
+        //dummy update
         static void Main(string[] args)
         {
             Console.WriteLine(building);
