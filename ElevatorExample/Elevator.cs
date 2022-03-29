@@ -73,9 +73,17 @@ namespace AutamationSystem.ElevatorSystem
 
         public void EnterFloorNumbers(params int[] floorNumbers)
         {
+            if (floorNumbers.Length == 0)
+            {
+                throw new InvalidOperationException("There is no floor number but you are still trying to enter");
+            }
+
+            IntArrayExtentions.RemoveDuplicates(ref floorNumbers);
+            IntArrayExtentions.RemoveValueAll(ref floorNumbers, CurrentFloor.FloorIndex);
+
             if (floorNumbers.Length == 0) return;
 
-            floorNumbers.Sort();
+            IntArrayExtentions.Sort(ref floorNumbers);
 
             Direction dir = Direction.None;
             if(TargetFloors.Count > 0)
@@ -148,14 +156,14 @@ namespace AutamationSystem.ElevatorSystem
             {
                 //We arrived to floor
                 TargetFloors.Dequeue();
-                Console.WriteLine($"{ElevatorIndex}. Elevator has arrived to : " + CurrentFloor.ToString());
+                Console.WriteLine($"Elevator {ElevatorIndex} has arrived to : " + CurrentFloor.ToString());
                 Console.WriteLine();
                 Door.Open();
                 return true;
             }
             else
             {
-                Console.WriteLine($"{ElevatorIndex}. Elevator is not arrived to {currentMoveData.Floor.FloorIndex} yet, current floor : {CurrentFloor.FloorIndex}");
+                Console.WriteLine($"Elevator {ElevatorIndex} is not arrived to {currentMoveData.Floor.FloorIndex} yet, current floor : {CurrentFloor.FloorIndex}");
                 Console.WriteLine();
                 return false;
             }

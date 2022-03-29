@@ -48,6 +48,7 @@
     <Compile Include="ElevatorFloorButton.cs" />
     <Compile Include="ElevatorDoor.cs" />
     <Compile Include="Floor.cs" />
+    <Compile Include="Input.cs" />
     <Compile Include="IntArrayExtentions.cs" />
     <Compile Include="Person.cs" />
     <Compile Include="Program.cs" />
