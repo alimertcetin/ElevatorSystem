@@ -43,12 +43,15 @@ namespace AutamationSystem.HumanLogic
             return person;
         }
 
-        private static DateTime GetRandomDate(int maxYear = 2005, int minYear = 0)
+        private static DateTime GetRandomDate(int startYear = 1998)
         {
-            var random = new Random();
-            var startDate = DateTime.Now.AddYears(-maxYear);
-            var endDate = DateTime.Now.AddYears(-minYear);
-            var range = Convert.ToInt32(endDate.Subtract(startDate).TotalDays);
+            Random random = new Random();
+            DateTime now = DateTime.Now.AddYears(-1);
+
+            DateTime startDate = new DateTime(startYear, now.Month, random.Next(0, 28));
+            TimeSpan timeBetween = now.Subtract(startDate);
+
+            int range = Convert.ToInt32(timeBetween.TotalDays);
             return startDate.AddDays(random.Next(range));
         }
 
