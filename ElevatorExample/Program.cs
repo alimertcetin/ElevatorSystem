@@ -15,7 +15,7 @@ namespace AutamationSystem
             Console.WriteLine(building);
             Console.WriteLine("----------");
             Console.WriteLine("----------");
-            Console.WriteLine("You can elevator at anytime by pressing 'C'");
+            Console.WriteLine("You can call elevator at anytime by pressing 'C'");
             Console.WriteLine("----------");
             Console.WriteLine("----------");
 
@@ -23,12 +23,12 @@ namespace AutamationSystem
 
             while (true)
             {
-                System.Threading.Thread.Sleep(500);
+                System.Threading.Thread.Sleep(1500);
                 building.ElevatorUpdate();
-                bool thereIsInput = input.InputUpdate();
-                if (thereIsInput)
+                input.InputUpdate();
+                if (input.GetKeyDown(ConsoleKey.C) && Input.ReadInputForElevatorCall(out int floorNumber))
                 {
-                    building.Floors[input.CalledFrom].CallElevator();
+                    building.Floors[floorNumber].CallElevator();
                 }
 
                 //if (building.IsElevatorStateIdle())
