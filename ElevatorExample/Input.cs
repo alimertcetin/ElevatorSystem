@@ -44,8 +44,7 @@ namespace AutamationSystem.InputSystem
                 keyMap[item.Key] = false;
             }
 
-            //TODO : Create more reliable input handling
-            if (Console.KeyAvailable) //Not much reliable, stores all input as Queue(not sure) processes later
+            while (Console.KeyAvailable)
             {
                 ConsoleKey key = Console.ReadKey(true).Key;
                 if (keyMap.ContainsKey(key))
