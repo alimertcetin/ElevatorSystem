@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AutamationSystem.FloorElevatorIntegration;
+using System;
 using System.Collections.Generic;
 
 namespace AutamationSystem.InputSystem
@@ -61,15 +62,32 @@ namespace AutamationSystem.InputSystem
         /// </summary>
         /// <returns>Returns true if input is legit for elevator call, if not returns false</returns>
         /// <param name="floorNumber">Legit input from user</param>
-        public static bool ReadInputForElevatorCall(out int floorNumber) //TODO : Find a better way to handle call input
+        public static bool ReadInputForElevatorCall(out int floorNumber, out Direction direction) 
         {
+            //TODO : Find a better way to handle call input
             bool isElevatorInput = false;
             floorNumber = int.MinValue;
+            direction = Direction.None;
             while (!isElevatorInput)
             {
                 Console.WriteLine("You must Enter floor, to skip press 'S'");
                 var lineInput = Console.ReadLine();
                 isElevatorInput = int.TryParse(lineInput, out floorNumber);
+
+                Console.WriteLine("Select a direction using up and down keys");
+                var dirInput = Console.ReadKey(true).Key;
+                if (dirInput == ConsoleKey.UpArrow)
+                {
+                    direction = Direction.Up;
+                }
+                else if (dirInput == ConsoleKey.DownArrow)
+                {
+                    direction = Direction.Down;
+                }
+                else
+                {
+                    isElevatorInput = false;
+                }
 
                 if (!isElevatorInput && lineInput.ToLower() == "s")
                 {

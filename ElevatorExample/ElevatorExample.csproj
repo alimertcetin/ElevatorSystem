@@ -44,9 +44,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Building.cs" />
+    <Compile Include="Button.cs" />
     <Compile Include="Elevator.cs" />
-    <Compile Include="ElevatorFloorButton.cs" />
+    <Compile Include="ElevatorCallButton.cs" />
     <Compile Include="ElevatorDoor.cs" />
+    <Compile Include="ElevatorFloorButton.cs" />
     <Compile Include="Floor.cs" />
     <Compile Include="Input.cs" />
     <Compile Include="IntArrayExtentions.cs" />

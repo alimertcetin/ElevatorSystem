@@ -4,7 +4,7 @@ using AutamationSystem.HumanLogic;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using static AutamationSystem.FloorElevatorIntegration.ElevatorFloorButton;
+using static AutamationSystem.FloorElevatorIntegration.ElevatorCallButton;
 
 namespace AutamationSystem.BuildingSytem
 {
@@ -14,42 +14,35 @@ namespace AutamationSystem.BuildingSytem
         public int FloorIndex { get; private set; }
         public List<Elevator> CurrentElevatorsOnFloor;
         public bool EntranceFloor { get; private set; }
-        public ElevatorFloorButton[] elevatorButtons;
+        public ElevatorCallButton[] elevatorButtons;
 
         public Floor(Building building, int floorIndex, int elevatorButtonCount)
         {
             this.Building = building;
             this.FloorIndex = floorIndex;
 
-            elevatorButtons = new ElevatorFloorButton[elevatorButtonCount];
-            for (int i = 0; i < elevatorButtonCount; i++)
+            elevatorButtons = new ElevatorCallButton[elevatorButtonCount * 2];
+            Direction startDir = Direction.Down;
+            for (int i = 0; i < elevatorButtons.Length; i++)
             {
-                elevatorButtons[i] = new ElevatorFloorButton(this);
+                if (startDir == Direction.Up) startDir = Direction.Down;
+                else startDir = Direction.Up;
+                elevatorButtons[i] = new ElevatorCallButton(this, startDir);
             }
 
             this.CurrentElevatorsOnFloor = new List<Elevator>();
         }
 
-        public void CallElevator()
+        public void CallElevator(Direction dir)
         {
-            Elevator selectedElevator = null;
-            foreach (Elevator elevator in Building.Elevators)
+            for (int i = 0; i < elevatorButtons.Length; i++)
             {
-                var direction = elevator.GetDirection(this.FloorIndex);
-                if(elevator.TargetFloors.Count > 0)
+                var button = elevatorButtons[i];
+                if(button.ButtonDirection == dir && button.IsPressLegit())
                 {
-                    Direction elevatorDir = elevator.GetDirection(elevator.TargetFloors.Peek().Floor.FloorIndex);
-                    if(elevatorDir == direction)
-                    {
-                        elevator.Call(this);
-                        selectedElevator = elevator;
-                        break;
-                    }
+                    button.Press();
+                    break;
                 }
-            }
-            if(selectedElevator == null)
-            {
-                Building.Elevators.GetClosest(this.FloorIndex).Call(this);
             }
         }
 
@@ -58,11 +51,14 @@ namespace AutamationSystem.BuildingSytem
             CurrentElevatorsOnFloor.Remove(elevator); //TODO : Use RemoveAt
         }
 
-        public void ElevatorArrived(Elevator elevator)
+        public void ElevatorArrived(Elevator elevator, Direction direction)
         {
             for (int i = 0; i < elevatorButtons.Length; i++)
             {
-                elevatorButtons[i].SetButtonStateToNone();
+                if (elevatorButtons[i].ButtonDirection == direction)
+                {
+                    elevatorButtons[i].Clear();
+                }
             }
             CurrentElevatorsOnFloor.Add(elevator);
         }

@@ -1,30 +1,18 @@
 ﻿using AutamationSystem.BuildingSytem;
-using System;
+using AutamationSystem.ElevatorSystem;
 
 namespace AutamationSystem.FloorElevatorIntegration
 {
-    public class ElevatorFloorButton
+    //TODO : Integrate to Elevator
+    public class ElevatorFloorButton : Button
     {
-        public enum Direction { None, Up, Down };
-
+        public Elevator Elevator { get; private set; }
         public Floor Floor { get; private set; }
-        public Direction PressedDirection { get; private set; }
 
-        public ElevatorFloorButton(Floor floor)
+        public ElevatorFloorButton(Elevator elevator, Floor floor)
         {
+            this.Elevator = elevator;
             this.Floor = floor;
-            PressedDirection = Direction.None;
         }
-
-        public bool IsPressed() => PressedDirection != Direction.None;
-
-        public void Press(Direction direction)
-        {
-            if (direction == Direction.None) throw new InvalidOperationException("You cant press none direction");
-
-            PressedDirection = direction;
-        }
-
-        public void SetButtonStateToNone() => PressedDirection = Direction.None;
     }
 }

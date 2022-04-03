@@ -1,8 +1,8 @@
 ﻿using AutamationSystem.BuildingSytem;
+using AutamationSystem.FloorElevatorIntegration;
 using AutamationSystem.HumanLogic;
 using System;
 using System.Collections.Generic;
-using Direction = AutamationSystem.FloorElevatorIntegration.ElevatorFloorButton.Direction;
 
 namespace AutamationSystem.ElevatorSystem
 {
@@ -34,6 +34,8 @@ namespace AutamationSystem.ElevatorSystem
         private ElevatorDoor Door { get; set; }
         private List<Person> personsCarrying = new List<Person>();
 
+        public Direction CurrentDirection;
+
         public Elevator(Building building, int elevatorIndex, Floor currentFloor, double moveSpeed = 1)
         {
             this.Building = building;
@@ -52,26 +54,25 @@ namespace AutamationSystem.ElevatorSystem
             this.Door = elevator.Door;
         }
 
-        public void Call(Floor floor)
+        public void Call(Floor floor, Direction direction)
         {
-            Direction direction = CurrentFloor.FloorIndex > floor.FloorIndex ? Direction.Down : Direction.Up;
-            
             TargetFloors.Enqueue(new ElevatorMoveData() 
             {
                 Direction = direction,
                 Floor = floor,
             });
+            CurrentDirection = direction;
         }
 
-        public void Call(List<int> floorIndexes)
+        public void Call(List<int> floorIndexes, Direction direction)
         {
             for (int i = 0; i < floorIndexes.Count; i++)
             {
-                Call(Building.Floors[floorIndexes[i]]);
+                Call(Building.Floors[floorIndexes[i]], direction);
             }
         }
 
-        public void EnterFloorNumbers(params int[] floorNumbers)
+        public void EnterFloorNumbers(Direction direction, params int[] floorNumbers)
         {
             if (floorNumbers.Length == 0)
             {
@@ -84,45 +85,42 @@ namespace AutamationSystem.ElevatorSystem
             if (floorNumbers.Length == 0) return;
 
             IntArrayExtentions.Sort(ref floorNumbers);
-
-            Direction dir = Direction.None;
-            if(TargetFloors.Count > 0)
+            if(CurrentDirection == Direction.None)
             {
-                ElevatorMoveData currentMoveData = TargetFloors.Peek();
-                dir = CurrentFloor.FloorIndex > currentMoveData.Floor.FloorIndex ? Direction.Down : Direction.Up;
+                CurrentDirection = direction;
             }
 
-            List<int> upDirectionList = new List<int>();
-            List<int> downDirectionList = new List<int>();
+            List<int> legitDirections = new List<int>();
+            //List<int> downDirectionList = new List<int>();
 
             for (int i = 0; i < floorNumbers.Length; i++)
             {
-                if (GetDirection(floorNumbers[i]) == Direction.Up)
+                if (GetDirection(floorNumbers[i]) == CurrentDirection)
                 {
-                    upDirectionList.Add(floorNumbers[i]);
+                    legitDirections.Add(floorNumbers[i]);
                 }
-                else
-                {
-                    downDirectionList.Add(floorNumbers[i]);
-                }
+                //else
+                //{
+                //    downDirectionList.Add(floorNumbers[i]);
+                //}
             }
-            downDirectionList.Reverse();
-
-            switch (dir)
-            {
-                case Direction.Up:
-                    Call(upDirectionList);
-                    Call(downDirectionList);
-                    break;
-                case Direction.Down:
-                    Call(downDirectionList);
-                    Call(upDirectionList);
-                    break;
-                default:
-                    Call(upDirectionList);
-                    Call(downDirectionList);
-                    break;
-            }
+            //downDirectionList.Reverse();
+            Call(legitDirections, CurrentDirection);
+            //switch (dir)
+            //{
+            //    case Direction.Up:
+            //        Call(upDirectionList);
+            //        Call(downDirectionList);
+            //        break;
+            //    case Direction.Down:
+            //        Call(downDirectionList);
+            //        Call(upDirectionList);
+            //        break;
+            //    default:
+            //        Call(upDirectionList);
+            //        Call(downDirectionList);
+            //        break;
+            //}
 
         }
 
@@ -137,7 +135,11 @@ namespace AutamationSystem.ElevatorSystem
         {
             if(Door.IsOpen) Door.Close();
 
-            if (TargetFloors.Count == 0) return false;
+            if (TargetFloors.Count == 0)
+            {
+                CurrentDirection = Direction.None;
+                return false;
+            }
 
             ElevatorMoveData currentMoveData = TargetFloors.Peek();
             if (CurrentFloor.FloorIndex == currentMoveData.Floor.FloorIndex)
@@ -151,7 +153,7 @@ namespace AutamationSystem.ElevatorSystem
 
             int floorIndex = CurrentFloor.FloorIndex > currentMoveData.Floor.FloorIndex ? CurrentFloor.FloorIndex - 1 : CurrentFloor.FloorIndex + 1;
             CurrentFloor = Building.Floors[floorIndex];
-            CurrentFloor.ElevatorArrived(this);
+            CurrentFloor.ElevatorArrived(this, CurrentDirection);
             if (CurrentFloor == currentMoveData.Floor)
             {
                 //We arrived to floor
@@ -159,6 +161,12 @@ namespace AutamationSystem.ElevatorSystem
                 Console.WriteLine($"Elevator {ElevatorIndex} has arrived to : " + CurrentFloor.ToString());
                 Console.WriteLine();
                 Door.Open();
+
+                //if (TargetFloors.Count == 0)
+                //{
+                //    CurrentDirection = Direction.None;
+                //}
+
                 return true;
             }
             else

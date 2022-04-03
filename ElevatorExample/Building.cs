@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using AutamationSystem.ElevatorSystem;
+using AutamationSystem.FloorElevatorIntegration;
 using AutamationSystem.HumanLogic;
 
 namespace AutamationSystem.BuildingSytem
@@ -48,6 +49,36 @@ namespace AutamationSystem.BuildingSytem
             for (int i = 0; i < floorCount; i++)
             {
                 Floors[i] = new Floor(this, i, elevatorCount); //initilize floors inside of the array
+                for (int j = 0; j < Floors[i].elevatorButtons.Length; j++)
+                {
+                    Floors[i].elevatorButtons[j].onButtonPressed += OnElevatorCalled;
+                }
+            }
+        }
+
+        private void OnElevatorCalled(Button button)
+        {
+            var callButton = button as ElevatorCallButton;
+
+            Elevator selectedElevator = null;
+            foreach (Elevator elevator in Elevators)
+            {
+                Direction directionToThisFloor = elevator.GetDirection(callButton.Floor.FloorIndex);
+                if (elevator.TargetFloors.Count > 0)
+                {
+                    Direction directionToNextFloor = elevator.GetDirection(elevator.TargetFloors.Peek().Floor.FloorIndex);
+                    if (directionToThisFloor == directionToNextFloor)
+                    {
+                        elevator.Call(callButton.Floor, elevator.CurrentDirection);
+                        selectedElevator = elevator;
+                        break;
+                    }
+                }
+            }
+            if (selectedElevator == null)
+            {
+                var closest = Elevators.GetClosest(callButton.Floor.FloorIndex);
+                closest.Call(callButton.Floor, callButton.ButtonDirection);
             }
         }
 
@@ -98,14 +129,14 @@ namespace AutamationSystem.BuildingSytem
             for (int i = 0; i < arrivedElevators.Count; i++)
             {
                 Elevator elevator = arrivedElevators[i];
-                Console.WriteLine("Enter Target floors to " + elevator.ElevatorIndex + ". Elevator");
-                Console.WriteLine("Input Example : 1,8,6,15 ----- If you wanna skip just enter : " + elevator.CurrentFloor.FloorIndex);
+                Console.WriteLine($"Elevator is going {elevator.CurrentDirection.ToString()} Enter Target floors to {elevator.ElevatorIndex}. Elevator");
+                Console.WriteLine("Input Example : 1,8,6,15 ----- Press Enter to skip...");
                 string[] floorNumbersStr = Console.ReadLine().Split(','); //Read input
                 int[] floorNumberArr = GetLegitFloorsFromInput(floorNumbersStr);
 
                 if (floorNumberArr.Length != 0)
                 {
-                    elevator.EnterFloorNumbers(floorNumberArr);
+                    elevator.EnterFloorNumbers(elevator.GetDirection(floorNumberArr[0]), floorNumberArr);
                 }
             }
         }

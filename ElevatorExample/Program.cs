@@ -23,18 +23,18 @@ namespace AutamationSystem
 
             while (true)
             {
-                System.Threading.Thread.Sleep(1500);
                 building.ElevatorUpdate();
                 input.InputUpdate();
-                if (input.GetKeyDown(ConsoleKey.C) && Input.ReadInputForElevatorCall(out int floorNumber))
+                if (input.GetKeyDown(ConsoleKey.C) && Input.ReadInputForElevatorCall(out int floorNumber, out var direction))
                 {
-                    building.Floors[floorNumber].CallElevator();
+                    building.Floors[floorNumber].CallElevator(direction);
                 }
 
                 //if (building.IsElevatorStateIdle())
                 //{
                 //    Console.WriteLine("Press 'C' to call elevator");
                 //}
+                System.Threading.Thread.Sleep(1000);
             }
         }
 
