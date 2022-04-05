@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using AutamationSystem.BuildingSytem;
+using AutamationSystem.ElevatorSystem;
 using AutamationSystem.InputSystem;
 
 namespace AutamationSystem
@@ -23,17 +24,14 @@ namespace AutamationSystem
 
             while (true)
             {
-                building.ElevatorUpdate();
+                building.ElevatorUpdate(out var arrivedElevators);
+                input.HandleArrivedElevators(arrivedElevators);
                 input.InputUpdate();
                 if (input.GetKeyDown(ConsoleKey.C) && Input.ReadInputForElevatorCall(out int floorNumber, out var direction))
                 {
                     building.Floors[floorNumber].CallElevator(direction);
                 }
 
-                //if (building.IsElevatorStateIdle())
-                //{
-                //    Console.WriteLine("Press 'C' to call elevator");
-                //}
                 System.Threading.Thread.Sleep(1000);
             }
         }

@@ -10,7 +10,6 @@ namespace AutamationSystem.BuildingSytem
 {
     public class Floor
     {
-        public Building Building;
         public int FloorIndex { get; private set; }
         public List<Elevator> CurrentElevatorsOnFloor;
         public bool EntranceFloor { get; private set; }
@@ -18,7 +17,6 @@ namespace AutamationSystem.BuildingSytem
 
         public Floor(Building building, int floorIndex, int elevatorButtonCount)
         {
-            this.Building = building;
             this.FloorIndex = floorIndex;
 
             elevatorButtons = new ElevatorCallButton[elevatorButtonCount * 2];
@@ -35,14 +33,18 @@ namespace AutamationSystem.BuildingSytem
 
         public void CallElevator(Direction dir)
         {
+            bool buttonPressed = false;
             for (int i = 0; i < elevatorButtons.Length; i++)
             {
-                var button = elevatorButtons[i];
-                if(button.ButtonDirection == dir && button.IsPressLegit())
+                ElevatorCallButton button = elevatorButtons[i];
+                if(!buttonPressed && button.ButtonDirection == dir && button.IsPressLegit())
                 {
+                    //Press all buttons that shows same direction
                     button.Press();
-                    break;
+                    buttonPressed = true;
+                    continue;
                 }
+                button.Disable();
             }
         }
 
@@ -55,9 +57,12 @@ namespace AutamationSystem.BuildingSytem
         {
             for (int i = 0; i < elevatorButtons.Length; i++)
             {
-                if (elevatorButtons[i].ButtonDirection == direction)
+                ElevatorCallButton button = elevatorButtons[i];
+                if (button.ButtonDirection == direction)
                 {
-                    elevatorButtons[i].Clear();
+                    if (!button.Enabled) button.Enable();
+
+                    button.Clear();
                 }
             }
             CurrentElevatorsOnFloor.Add(elevator);

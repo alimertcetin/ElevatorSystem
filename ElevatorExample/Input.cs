@@ -1,4 +1,5 @@
-﻿using AutamationSystem.FloorElevatorIntegration;
+﻿using AutamationSystem.ElevatorSystem;
+using AutamationSystem.FloorElevatorIntegration;
 using System;
 using System.Collections.Generic;
 
@@ -109,6 +110,52 @@ namespace AutamationSystem.InputSystem
                 return true;
             }
             return false;
+        }
+
+        public void HandleArrivedElevators(List<Elevator> arrivedElevators)
+        {
+            for (int i = 0; i < arrivedElevators.Count; i++)
+            {
+                Elevator elevator = arrivedElevators[i];
+                Console.WriteLine($"Elevator is going {elevator.CurrentDirection.ToString()} Enter Target floors to {elevator.ElevatorIndex}. Elevator");
+                Console.WriteLine("Input Example : 1,8,6,15 ----- Press Enter to skip...");
+                string[] floorNumbersStr = Console.ReadLine().Split(','); //Read input
+                int[] floorNumberArr = GetLegitFloorsFromInput(floorNumbersStr);
+
+                IntArrayExtentions.RemoveDuplicates(ref floorNumberArr);
+                IntArrayExtentions.RemoveValueAll(ref floorNumberArr, elevator.CurrentFloor.FloorIndex);
+
+                if (floorNumberArr.Length != 0)
+                {
+                    elevator.EnterFloorNumbers(floorNumberArr);
+                }
+            }
+        }
+
+        private int[] GetLegitFloorsFromInput(string[] floorNumbersStr)
+        {
+            int[] floorNumberArr = new int[0];
+            for (int i = 0; i < floorNumbersStr.Length; i++)
+            {
+                if (int.TryParse(floorNumbersStr[i], out var floorNumber))
+                {
+                    if (i == floorNumberArr.Length)
+                    {
+                        IntArrayExtentions.Resize(ref floorNumberArr, i + 1);
+                    }
+                    floorNumberArr[i] = floorNumber;
+                }
+                else if (string.IsNullOrWhiteSpace(floorNumbersStr[i]))
+                {
+                    continue;
+                }
+                else
+                {
+                    Console.WriteLine($"{floorNumbersStr[i]} is not a legit floor number");
+                }
+            }
+
+            return floorNumberArr;
         }
     }
 }
