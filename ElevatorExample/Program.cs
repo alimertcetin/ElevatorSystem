@@ -24,6 +24,9 @@ namespace AutamationSystem
 
             while (true)
             {
+                XIV.Timer.Update();
+                Console.WriteLine(XIV.Timer.DeltaTime);
+
                 building.ElevatorUpdate(out var arrivedElevators);
                 input.HandleArrivedElevators(arrivedElevators);
                 input.InputUpdate();
