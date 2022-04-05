@@ -1,10 +1,8 @@
 ﻿using AutamationSystem.ElevatorSystem;
 using AutamationSystem.FloorElevatorIntegration;
-using AutamationSystem.HumanLogic;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using static AutamationSystem.FloorElevatorIntegration.ElevatorCallButton;
 
 namespace AutamationSystem.BuildingSytem
 {
@@ -15,7 +13,7 @@ namespace AutamationSystem.BuildingSytem
         public bool EntranceFloor { get; private set; }
         public ElevatorCallButton[] elevatorButtons;
 
-        public Floor(Building building, int floorIndex, int elevatorButtonCount)
+        public Floor(int floorIndex, int elevatorButtonCount)
         {
             this.FloorIndex = floorIndex;
 
@@ -37,20 +35,30 @@ namespace AutamationSystem.BuildingSytem
             for (int i = 0; i < elevatorButtons.Length; i++)
             {
                 ElevatorCallButton button = elevatorButtons[i];
-                if(!buttonPressed && button.ButtonDirection == dir && button.IsPressLegit())
+                if(button.ButtonDirection == dir)
                 {
-                    //Press all buttons that shows same direction
-                    button.Press();
-                    buttonPressed = true;
-                    continue;
+                    if (!buttonPressed && button.IsPressLegit())
+                    {
+                        //Press all buttons that shows same direction
+                        button.Press();
+                        buttonPressed = true;
+                        continue;
+                    }
+                    button.Disable();
                 }
-                button.Disable();
             }
         }
 
         public void ElevatorMovedAway(Elevator elevator)
         {
-            CurrentElevatorsOnFloor.Remove(elevator); //TODO : Use RemoveAt
+            for (int i = 0; i < CurrentElevatorsOnFloor.Count; i++)
+            {
+                if(CurrentElevatorsOnFloor[i] == elevator)
+                {
+                    CurrentElevatorsOnFloor.RemoveAt(i);
+                    break;
+                }
+            }
         }
 
         public void ElevatorArrived(Elevator elevator, Direction direction)
