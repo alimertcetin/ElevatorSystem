@@ -13,11 +13,11 @@ namespace AutamationSystem.BuildingSytem
         public bool EntranceFloor { get; private set; }
         public ElevatorCallButton[] elevatorButtons;
 
-        public Floor(int floorIndex, int elevatorButtonCount)
+        public Floor(int floorIndex, int elevatorCount)
         {
             this.FloorIndex = floorIndex;
 
-            elevatorButtons = new ElevatorCallButton[elevatorButtonCount * 2];
+            elevatorButtons = new ElevatorCallButton[elevatorCount * 2];
             Direction startDir = Direction.Down;
             for (int i = 0; i < elevatorButtons.Length; i++)
             {

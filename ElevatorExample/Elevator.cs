@@ -19,6 +19,8 @@ namespace AutamationSystem.ElevatorSystem
         public Direction CurrentDirection;
         public ElevatorFloorButton[] FloorButtons;
 
+        //TODO : Remove ElevatorDoor and ElevatorFloorButton dependencies
+
         public Elevator(Elevator elevator)
         {
             this.Floors = elevator.Floors;
@@ -88,6 +90,10 @@ namespace AutamationSystem.ElevatorSystem
             return CurrentFloor.FloorIndex > floorIndex ? Direction.Down : Direction.Up;
         }
 
+        /// <summary>
+        /// True if arrived
+        /// </summary>
+        /// <returns>Returns true if elevator has arrived</returns>
         public bool Move()
         {
             if(Door.IsOpen) Door.Close();
